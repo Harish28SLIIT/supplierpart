@@ -87,7 +87,7 @@ export default function ProductDetails() {
                             </label>
                         </div>
                         <div className="ml-[750px] mt-6">
-                            <Link to='/createproduct' className="edit_btn m-[40px]">Add Product</Link>
+                            <Link to='/createproduct' className="edit_btn ">Add Product</Link>
                         </div>
                         <div className="bg-white rounded p-3  ml-6">
                             <table className="w-full border mt-5">

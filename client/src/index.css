@@ -8,8 +8,8 @@
 }
 
 .edit_btn{
-    @apply   rounded-md p-2 m-5 cursor-pointer hover:scale-[1.1] bg-green-950
-    w-[150px] h-8 justify-end font-serif ml-[250px]
+    @apply   rounded-md w-[300px] p-2 cursor-pointer hover:scale-[1.1] bg-green-950
+     h-10 font-serif ml-[200px]
     text-white
 }
 

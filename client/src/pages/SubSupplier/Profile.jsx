@@ -9,11 +9,9 @@ export default function Profile() {
 
   const [Id, setID] = useState('');
   const [Name, setName] = useState('');
-  const [Email_address, setAdd] = useState('');
-  const [Contact_No, setNo] = useState('');
-  const [NIC_number, setNIC] = useState('');
-  
-
+  const [Email_address, setEmail_address] = useState('');
+  const [Contact_No, setContact_No] = useState('');
+  const [NIC_number, setNIC_number] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,26 +19,27 @@ export default function Profile() {
 
     try {
       const response = await axios.post('http://localhost:8000/server/supplier/createProfile', {
-          Id,
-          Name,
-          Email_address,
-          Contact_No,
-          NIC_number
+        Id,
+        Name,
+        Email_address,
+        Contact_No,
+        NIC_number
+
       });
 
       if (response.status === 201) {
           console.log(response.data);
-          alert('Profile created successfully!');
-          navigate('/ProfileDisplay');
+          alert('Profile details created successfully!');
+          navigate('/profiledisplay');
       } else {
           // Handle non-200 status codes
-          throw new Error(response.statusText || 'Failed to create profile');
+          throw new Error(response.statusText || 'Failed to create profile details');
       }
   } catch (error) {
       // If the error is an object, stringify it to get useful information
       const errorMessage = error.response ? JSON.stringify(error.response.data) : error.message;
-      console.error('Error creating profile:', errorMessage);
-      alert('Failed to create profile. Please try again.');
+      console.error('Error creating profile details:', errorMessage);
+      alert('Failed to create profile details. Please try again.');
   }
 };
 
@@ -112,7 +111,7 @@ export default function Profile() {
                     className="w-full p-2 border rounded"
                     id="Email_address" name="Email_address" autoComplete='off' 
                     value={Email_address}
-                    onChange={(e) =>{setAdd(e.target.value)}}
+                    onChange={(e) =>{setEmail_address(e.target.value)}}
                   />
                 </div>
                 <div className="mb-2 font-serif">
@@ -123,7 +122,7 @@ export default function Profile() {
                     className="w-full p-2 border rounded"
                     id="Contact_No" name="Contact_No" autoComplete='off' 
                     value={Contact_No}
-                    onChange={(e) =>{setNo(e.target.value)}}
+                    onChange={(e) =>{setContact_No(e.target.value)}}
                   />
                 </div>
                 <div className="mb-2 font-serif">
@@ -134,7 +133,7 @@ export default function Profile() {
                     className="w-full p-2 border rounded"
                     id="NIC_number" name="NIC_number" autoComplete='off' 
                     value={NIC_number}
-                    onChange={(e) =>{setNIC(e.target.value)}}
+                    onChange={(e) =>{setNIC_number(e.target.value)}}
 
                   />
                 </div>

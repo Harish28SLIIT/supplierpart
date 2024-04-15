@@ -1,5 +1,5 @@
 import express from "express";
-import { CreateProductDetails, getAllProductDetails, getOneProductDetail, updateProductDetailsById, deleteProductDetailsById } from "../controller/productController.js";
+import { CreateProductDetails, getAllProductDetails, getOneProductDetail, updateProductDetailsById, deleteProductDetailsById} from "../controller/productController.js";
 
 const route = express.Router();
 
@@ -8,5 +8,7 @@ route.get("/supplierGetall", getAllProductDetails);
 route.get("/supplierGetone/:id", getOneProductDetail);
 route.put("/supplierUpdate/:id", updateProductDetailsById);
 route.delete("/supplierDelete/:id", deleteProductDetailsById);
+
+
 
 export default route;

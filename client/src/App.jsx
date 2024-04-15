@@ -8,6 +8,7 @@ import ProfileDisplay from './pages/ProfileDisplay';
 import PaymentDisplay from './pages/PaymentDisplay';
 import UpdateProfileDetails from './pages/SubSupplier/UpdateProfileDetails';
 import PaymentUpdate from './pages/SubSupplier/PaymentUpdate';
+import CalculateTotalPrice from './pages/SubSupplier/CalculateTotalPrice';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             <Route path="/paymentdisplay" element={<PaymentDisplay />} />
             <Route path="/UpdateProfileDetails/:id" element={<UpdateProfileDetails/>} />
             <Route path="/PaymentUpdate/:id" element={<PaymentUpdate/>} />
+            <Route path="/CalculateTotalPrice" element={<CalculateTotalPrice/>} />
         </Routes>
         </Router>
     </div>

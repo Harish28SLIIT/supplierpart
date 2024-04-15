@@ -19,7 +19,7 @@ export default function UpdateProfileDetails() {
   useEffect(() => {
     axios.get(`http://localhost:8000/server/supplier/getOneProfile/${id}`)
       .then((result) => {
-        setID(result.data.data.Id);
+        setID(result.data.data.Id);yield
         setName(result.data.data.Name);
         setAdd(result.data.data.Email_address);
         setNo(result.data.data.Contact_No);
@@ -44,13 +44,15 @@ export default function UpdateProfileDetails() {
       .then((result) => {
         console.log(result);
         alert("Profile details successfully updated");
-        navigate('/productdetails');
+        navigate('/ProfileDisplay');
       })
+      
       .catch((error) => {
         console.error('Profile not updated:', error);
-    });
+      });
   };
-
+  
+  
   return (
     <>
       <div className="flex justify-between mt-4 px-14">
@@ -87,7 +89,7 @@ export default function UpdateProfileDetails() {
                     className="w-full p-2 border rounded"
                     name="ID"
                     value={Id}
-                    readOnly
+                    onChange={(e) => setID(e.target.value)}
                   />
                 </div>
                 <div className="mb-2 font-serif">
@@ -137,7 +139,7 @@ export default function UpdateProfileDetails() {
                 
                 
                 <div className="flex flex-row justify-center font-serif text-center">
-                  <Link to="/ProfileDisplay" className="new_btn m-[30px]">Save</Link>
+                  <button to="/ProfileDisplay" className="new_btn m-[30px]">Save</button>
                 </div>
               </form>
             </div>

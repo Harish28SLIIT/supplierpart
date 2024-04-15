@@ -12,8 +12,8 @@ export default function Supplier_updateProduct() {
   const [name, setName] = useState("");
   const [qty, setQty] = useState("");
   const [netweight, setWeight] = useState('');
-  const [unitprice, setPrice] = useState(""); 
-  const [totalprice, setTotalPrice] = useState("");
+  const [unitprice, setUnitprice] = useState(""); 
+  const [totalprice, setTotalprice] = useState("");
 
   const navigate = useNavigate();
 
@@ -23,8 +23,8 @@ export default function Supplier_updateProduct() {
         setId(result.data.data.Id);
         setName(result.data.data.name);
         setQty(result.data.data.qty);
-        setPrice(result.data.data.unitprice);
-        setTotalPrice(result.data.data.totalprice);
+        setUnitprice(result.data.data.unitprice);
+        setTotalprice(result.data.data.totalprice);
         setWeight(result.data.data.netweight);
         
       })
@@ -32,15 +32,15 @@ export default function Supplier_updateProduct() {
   }, [id]);
 
   // Function to calculate total price based on quantity and unit price
-  const calculateTotalPrice = () => {
-    const totalPrice = parseFloat(qty) * parseFloat(unitprice);
-    setTotalPrice(totalPrice.toFixed(2)); // Ensure total price is formatted as currency with 2 decimal places
-  };
+  // const calculateTotalPrice = () => {
+  //   const totalPrice = parseFloat(qty) * parseFloat(unitprice);
+  //   setTotalPrice(totalPrice.toFixed(2)); // Ensure total price is formatted as currency with 2 decimal places
+  // };
 
   // Update total price whenever quantity or unit price changes
-  useEffect(() => {
-    calculateTotalPrice();
-  }, [qty, unitprice]);
+  // useEffect(() => {
+  //   calculateTotalPrice();
+  // }, [qty, unitprice]);
 
   const handleUpdate = (e) => {
     e.preventDefault();
@@ -90,6 +90,8 @@ export default function Supplier_updateProduct() {
               <h2 className="text-2xl font-bold mb-4 font-serif text-center">
                 Update Product
               </h2>
+              <div className='flex flex-row justify-center font-serif text-center'>
+    <Link to='/CalculateTotalPrice' className='newly_btn ml-9'>Calculate Total Price</Link> </div>
               <form onSubmit={handleUpdate}>
                 <div className="mb-2 font-serif">
                   <label htmlFor="ID">ID</label>
@@ -141,24 +143,25 @@ export default function Supplier_updateProduct() {
                     type='text'
                     placeholder='Enter the Unit Price'
                     className='w-full p-2 border rounded'
-                    id='unitprice'
+                    
                     name='unitprice'
-                    autoComplete='off'
+            
                     value={unitprice}
-                    onChange={(e) => setPrice(e.target.value)}
+                    onChange={(e) => setUnitprice(e.target.value)}
                   />
                 </div>
                 <div className='mb-2 font-serif'>
                   <label htmlFor='totalprice'>Total Price(Rs.)</label>
                   <input
                     type='text'
-                    placeholder='Total Price'
+                    placeholder='totalprice'
                     className='w-full p-2 border rounded'
-                    id='totalprice'
+                    
                     name='totalprice'
-                    autoComplete='off'
+                  
                     value={totalprice}
-                    readOnly
+                    onChange={(e) => setTotalprice(e.target.value)}
+                    // readOnly
                   />
                 </div>
                 <div className="flex flex-row justify-center font-serif text-center">

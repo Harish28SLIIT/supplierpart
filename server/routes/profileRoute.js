@@ -7,7 +7,7 @@ router.post('/createProfile', createProfile);
 
 router.get('/getallProfile', getAllProfileDetails);
 router.get('/getOneProfile/:id', getOneProfileDetail);
-router.put('/updateProfileDetails/:id', updateProfileDetailsById);
+router.put('/UpdateProfileDetails/:id', updateProfileDetailsById);
 router.delete('/Profiledelete/:id', deleteProfileDetailsById);
 
 
