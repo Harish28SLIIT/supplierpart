@@ -10,31 +10,30 @@ export default function UpdateProfileDetails() {
 
   const [Id, setID] = useState('');
   const [Name, setName] = useState('');
-  const [Email_address, setAdd] = useState('');
-  const [Contact_No, setNo] = useState('');
-  const [NIC_number, setNIC] = useState('');
-
+  const [Email_address, setEmail_address] = useState('');
+  const [Contact_No, setContact_No] = useState('');
+  const [NIC_number, setNIC_number] = useState('');
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const [showId, setShowId] = useState(false);
 
   useEffect(() => {
     axios.get(`http://localhost:8000/server/supplier/getOneProfile/${id}`)
       .then((result) => {
-        setID(result.data.data.Id);yield
-        setName(result.data.data.Name);
-        setAdd(result.data.data.Email_address);
-        setNo(result.data.data.Contact_No);
-        setNIC(result.data.data.NIC_number);
-        
+        const data = result.data.data;
+        setID(data.Id);
+        setName(data.Name);
+        setEmail_address(data.Email_address);
+        setContact_No(data.Contact_No);
+        setNIC_number(data.NIC_number);
       })
       .catch((err) => console.log(err));
   }, [id]);
 
-
-
   const handleUpdate = (e) => {
     e.preventDefault();
-    axios
-      .put(`http://localhost:8000/server/supplier/UpdateProfileDetails/${id}`, {
+    if (validate()) {
+      axios.put(`http://localhost:8000/server/supplier/UpdateProfileDetails/${id}`, {
         Id,
         Name,
         Email_address,
@@ -46,19 +45,70 @@ export default function UpdateProfileDetails() {
         alert("Profile details successfully updated");
         navigate('/ProfileDisplay');
       })
-      
       .catch((error) => {
         console.error('Profile not updated:', error);
       });
+    }
   };
-  
+
+  const toggleShowId = () => {
+    setShowId(!showId);
+  };
+
+  const validate = () => {
+    let errors = {};
+    let isValid = true;
+
+    if (!Id) {
+      errors.Id = "ID is required";
+      isValid = false;
+    } else if (!/^\d+$/.test(Id)) {
+      errors.Id = "ID should contain only numbers";
+      isValid = false;
+    }
+
+    if (!Name) {
+      errors.Name = "Name is required";
+      isValid = false;
+    }
+
+    if (!Email_address) {
+      errors.Email_address = "Email address is required";
+      isValid = false;
+    } else if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(Email_address)) {
+      errors.Email_address = "Invalid email address. Must be a Gmail address";
+      isValid = false;
+    }
+
+    if (!Contact_No) {
+      errors.Contact_No = "Contact No. is required";
+      isValid = false;
+    } else if (!/^\d{10}$/.test(Contact_No)) {
+      errors.Contact_No = "Contact number should contain exactly 10 numbers";
+      isValid = false;
+    }
+
+    if (!NIC_number) {
+      errors.NIC_number = "NIC number is required";
+      isValid = false;
+    } else if (!/^[\dVv]+$/.test(NIC_number)) {
+      errors.NIC_number = "NIC number should contain numbers and the letter 'V' only";
+      isValid = false;
+    }
+
+    setErrors(errors);
+    return isValid;
+  };
   
   return (
     <>
+      {/* Your header */}
       <div className="flex justify-between mt-4 px-14">
+        {/* Logo */}
         <div>
           <img className="w-[120px] h-[48px]" src={Logo} alt="Logo" />
         </div>
+        {/* Supplier Dashboard */}
         <div>
           <ul className="flex gap-6">
             <li className="hover:text-[#75d705] hover:border-solid cursor-pointer text-2xl font-serif">
@@ -66,6 +116,7 @@ export default function UpdateProfileDetails() {
             </li>
           </ul>
         </div>
+        {/* Logout */}
         <div>
           <h1 className="bg-white text-[#417702] px-2 py-1 rounded-md hover:opacity-[1.1] cursor-pointer border border-green-800 w-[100px] text-center font-serif active:bg-slate-500">
             <Link to="/logout">Logout</Link>
@@ -73,24 +124,31 @@ export default function UpdateProfileDetails() {
         </div>
       </div>
 
+      {/* Form for updating profile */}
       <div className="flex flex-row">
         <div className="w-[20%] h-[650px] flex-grow border  pl-[100px]">
           <div className="w-1/2 p-3 ml-[300px]">
             <div className="bg-gray-200 rounded-lg p-4">
               <h2 className="text-2xl font-bold mb-4 font-serif text-center">
-                Update Product
+                Update Profile
               </h2>
               <form onSubmit={handleUpdate}>
                 <div className="mb-2 font-serif">
-                  <label htmlFor="ID">ID</label>
-                  <input
-                    type="text"
-                    placeholder="Enter the Id"
-                    className="w-full p-2 border rounded"
-                    name="ID"
-                    value={Id}
-                    onChange={(e) => setID(e.target.value)}
-                  />
+                  <label htmlFor="Id">ID</label>
+                  <div className="flex items-center">
+                    <input
+                      type={showId ? "text" : "password"}
+                      placeholder="Enter your Id"
+                      className="w-full p-2 border rounded"
+                      value={Id}
+                      onChange={(e) => setID(e.target.value)}
+                      name="Id"
+                    />
+                    <button type="button" onClick={toggleShowId}>
+                      {showId ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  {errors.Id && <span className="text-red-500">{errors.Id}</span>}
                 </div>
                 <div className="mb-2 font-serif">
                   <label htmlFor="Name">Name</label>
@@ -102,17 +160,19 @@ export default function UpdateProfileDetails() {
                     value={Name}
                     onChange={(e) => setName(e.target.value)}
                   />
+                  {errors.Name && <span className="text-red-500">{errors.Name}</span>}
                 </div>
                 <div className="mb-2 font-serif">
-                  <label htmlFor="Email-address">Email address</label>
+                  <label htmlFor="Email_address">Email address</label>
                   <input
                     type="text"
-                    placeholder="Enter the Emailaddress"
-                    className="w-full p-2 border rounded"
-                    name="Email-address"
+                    placeholder="Enter the Email address"
+                    className={`w-full p-2 border rounded ${errors.Email_address ? 'border-red-500' : ''}`}
+                    name="Email_address"
                     value={Email_address}
-                    onChange={(e) => setAdd(e.target.value)}
+                    onChange={(e) => setEmail_address(e.target.value)}
                   />
+                  {errors.Email_address && <span className="text-red-500">{errors.Email_address}</span>}
                 </div>
                 <div className="mb-2 font-serif">
                   <label htmlFor="Contact_No">Contact Number</label>
@@ -122,8 +182,9 @@ export default function UpdateProfileDetails() {
                     className="w-full p-2 border rounded"
                     name="Contact_No"
                     value={Contact_No}
-                    onChange={(e) => setNo(e.target.value)}
+                    onChange={(e) => setContact_No(e.target.value)}
                   />
+                  {errors.Contact_No && <span className="text-red-500">{errors.Contact_No}</span>}
                 </div>
                 <div className="mb-2 font-serif">
                   <label htmlFor="NIC_number">NIC Number</label>
@@ -133,13 +194,12 @@ export default function UpdateProfileDetails() {
                     className="w-full p-2 border rounded"
                     name="NIC_number"
                     value={NIC_number}
-                    onChange={(e) => setNIC(e.target.value)}
+                    onChange={(e) => setNIC_number(e.target.value)}
                   />
+                  {errors.NIC_number && <span className="text-red-500">{errors.NIC_number}</span>}
                 </div>
-                
-                
                 <div className="flex flex-row justify-center font-serif text-center">
-                  <button to="/ProfileDisplay" className="new_btn m-[30px]">Save</button>
+                  <button type="submit" className="new_btn m-[30px]">Save</button>
                 </div>
               </form>
             </div>

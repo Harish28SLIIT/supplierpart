@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';React;
+import axios from 'axios';
 import Logo from '../assets/Logo.jpg';
 import { Link } from 'react-router-dom';
 import { IoMdSearch } from 'react-icons/io';
-import axios from 'axios';
-import Footer from '../component/Footer'
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import Footer from '../component/Footer';
 
-export default function ProductDetails() {
+const ProductDetails = () => {
     const [InProduct, setInProduct] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -41,6 +43,21 @@ export default function ProductDetails() {
             product.Id.toLowerCase().includes(e.target.value.toLowerCase())
         );
         setSearchResults(results);
+    };
+
+    const generateReportPDF = () => {
+        const doc = new jsPDF();
+        const tableColumn = ["ID", "Name", "Quantity", "Net Weight(g)", "Total Price(Rs.)"];
+        const tableRows = searchResults.map(product => [
+            product.Id,
+            product.name,
+            product.qty,
+            product.netweight,
+            product.totalprice
+        ]);
+
+        doc.autoTable(tableColumn, tableRows, { startY: 20 });
+        doc.save("product_details_report.pdf");
     };
 
     return (
@@ -96,9 +113,9 @@ export default function ProductDetails() {
                                         <th className="p-3 text-center">ID</th>
                                         <th className="p-3 text-center">Name</th>
                                         <th className="p-3 text-center">Quantity</th>
-                                         <th className="p-3 text-center">NetWeight(g)</th>
+                                        <th className="p-3 text-center">NetWeight(g)</th>
                                         <th className="p-3 text-center">Total Price(Rs.)</th>
-                                        <th className="p-3 text-left">Action</th> 
+                                        <th className="p-3 text-left">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -108,7 +125,7 @@ export default function ProductDetails() {
                                             <td className="text-center">{product.name}</td>
                                             <td className="text-center">{product.qty}</td>
                                             <td className="text-center">{product.netweight}</td>
-                                            <td className="text-center">{product.totalprice}</td> 
+                                            <td className="text-center">{product.totalprice}</td>
                                             <td className="flex text-center ">
                                                 <Link to={`/updateproduct/${product._id}`} className=" bg-green-950 text-white px-3 py-1 rounded text-center mr-2">Update</Link>
                                                 <button className=" bg-red-500 text-white px-3 py-1 rounded text-center mr-2" onClick={() => handleDelete(product._id)}>Delete</button>
@@ -118,10 +135,17 @@ export default function ProductDetails() {
                                 </tbody>
                             </table>
                         </div>
+                        <div className='mb-2 font-serif'></div>
+                        <div className='flex justify-between'>
+                            <button className='new_btn ml-9' onClick={generateReportPDF}>Generate Report PDF</button>
+                            <Link to='/CalculateTotalPrice' className='new_btn ml-9'>Calculator</Link>
+                        </div>
                     </main>
                 </div>
             </div>
             <Footer />
         </>
     );
-}
+};
+
+export default ProductDetails;

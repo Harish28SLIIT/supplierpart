@@ -2,9 +2,8 @@ import React, { useState } from "react";React;
 import Logo from "../../assets/Logo.jpg";
 import { Link } from "react-router-dom";
 import axios from 'axios';
-import Footer from '../../component/Footer'; // Import Footer component
+import Footer from '../../component/Footer';
 import { useNavigate } from 'react-router-dom';
-
 
 export default function Payment() {
   const [Card_Holder_Name, setName] = useState('');
@@ -14,12 +13,16 @@ export default function Payment() {
   const [Expiry_Month, setMonth] = useState('');
   const [Expiry_Year, setYear] = useState('');
   const [Branch, setBranch] = useState('');
-
-
+  const [showCVC, setShowCVC] = useState(false);
+  const [showCardNumber, setShowCardNumber] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validate()) {
+      return;
+    }
 
     try {
       const response = await axios.post('http://localhost:8000/server/supplier//createPaymentDetails', {
@@ -37,30 +40,80 @@ export default function Payment() {
           alert('Payment details created successfully!');
           navigate('/PaymentDisplay');
       } else {
-          // Handle non-200 status codes
           throw new Error(response.statusText || 'Failed to create payment details');
       }
     } catch (error) {
       if (error.response && error.response.status === 400 && error.response.data.errors) {
-        // Display validation errors
         const validationErrors = error.response.data.errors.join('\n');
         alert('Validation errors:\n' + validationErrors);
       } else {
-        // Display general error
         console.error('Error creating payment details:', error.message);
         alert('Failed to create payment details. Please try again.');
       }
     }
-    };
-  
+  };
 
+  const toggleShowCVC = () => {
+    setShowCVC(!showCVC);
+  };
+
+  const toggleShowCardNumber = () => {
+    setShowCardNumber(!showCardNumber);
+  };
+
+  const validate = () => {
+    let errors = {};
+    let isValid = true;
+
+    // Validation for Card Holder Name
+    if (!Card_Holder_Name) {
+      errors.Card_Holder_Name = "Card holder name is required";
+      isValid = false;
+    } else if (!/^[a-zA-Z. ]+$/.test(Card_Holder_Name)) {
+      errors.Card_Holder_Name = "Card holder name should contain only letters and dots";
+      isValid = false;
+    }
+
+    // Validation for Bank Name
+    if (!Name_of_Bank) {
+      errors.Name_of_Bank = "Bank name is required";
+      isValid = false;
+    } else if (!/^[a-zA-Z]+$/.test(Name_of_Bank)) {
+      errors.Name_of_Bank = "Bank name should contain only letters";
+      isValid = false;
+    }
+
+    // Validation for Card Number
+    if (!Card_Number) {
+      errors.Card_Number = "Card number is required";
+      isValid = false;
+    } else if (!/^\d{16}$/.test(Card_Number)) {
+      errors.Card_Number = "Card number should contain exactly 16 numbers";
+      isValid = false;
+    }
+
+    // Validation for CVC
+    if (!cvc) {
+      errors.cvc = "CVC is required";
+      isValid = false;
+    } else if (!/^\d{3,4}$/.test(cvc)) {
+      errors.cvc = "CVC should contain exactly 3 or 4 numbers";
+      isValid = false;
+    }
+
+    setErrors(errors);
+    return isValid;
+  };
   
   return (
     <>
-<div className="flex justify-between mt-4 px-14">
+      
+      <div className="flex justify-between mt-4 px-14">
+        
         <div>
           <img className="w-[120px] h-[48px]" src={Logo} alt="Logo" />
         </div>
+        
         <div>
           <ul className="flex gap-6">
             <li className="hover:text-[#75d705] hover:border-solid cursor-pointer text-2xl font-serif">
@@ -68,13 +121,17 @@ export default function Payment() {
             </li>
           </ul>
         </div>
+      
         <div>
-        <h1 className="bg-white text-[#417702] px-2 py-1 rounded-md hover:opacity-[1.1] cursor-pointer border border-green-800 w-[100px] text-center font-serif active:bg-slate-500">
-        <Link to="/logout">Logout</Link>
+          <h1 className="bg-white text-[#417702] px-2 py-1 rounded-md hover:opacity-[1.1] cursor-pointer border border-green-800 w-[100px] text-center font-serif active:bg-slate-500">
+            <Link to="/logout">Logout</Link>
           </h1>
         </div>
       </div>
+
+      
       <div className="flex flex-row">
+        {/* Sidebar */}
         <div className="bg-lime-950 w-[175px] h-[650px] text-center rounded-md">
           <Link to="/ProfileDisplay" className="btn">Profile</Link>
           <Link to="/productdetails" className="btn">Product Details</Link>
@@ -82,6 +139,7 @@ export default function Payment() {
           <Link to="/PaymentDisplay" className="btn">Payment Details</Link>
         </div>
 
+        
         <div className="w-[20%] h-[650px] flex-grow border">
           <div className="w-1/2 p-3 ml-[300px]">
             <div className="bg-gray-200 rounded-lg p-4">
@@ -93,10 +151,13 @@ export default function Payment() {
                     type="text"
                     placeholder="Enter the Card holder name"
                     className="w-full p-2 border rounded"
-                    id="Card_Holder_Name" name="Card_Holder_Name" autoComplete='off' value={Card_Holder_Name}
-                    onChange={(e) =>{setName(e.target.value)}}
-                    
+                    id="Card_Holder_Name"
+                    name="Card_Holder_Name"
+                    autoComplete='off'
+                    value={Card_Holder_Name}
+                    onChange={(e) => { setName(e.target.value) }}
                   />
+                  {errors.Card_Holder_Name && <span className="text-red-500">{errors.Card_Holder_Name}</span>}
                 </div>
                 <div className="mb-2 font-serif">
                   <label htmlFor="Name_of_Bank">Name of Bank</label>
@@ -104,44 +165,60 @@ export default function Payment() {
                     type="text"
                     placeholder="Enter the Name of the bank"
                     className="w-full p-2 border rounded"
-                    id="Name_of_Bank" name="Name_of_Bank" autoComplete='off' 
+                    id="Name_of_Bank"
+                    name="Name_of_Bank"
+                    autoComplete='off'
                     value={Name_of_Bank}
-                    onChange={(e) =>{setBankName(e.target.value)}}
-                    
+                    onChange={(e) => { setBankName(e.target.value) }}
                   />
+                  {errors.Name_of_Bank && <span className="text-red-500">{errors.Name_of_Bank}</span>}
                 </div>
                 <div className="mb-2 font-serif">
                   <label htmlFor="Card_Number">Card Number</label>
-                  <input
-                    type="text"
-                    placeholder="Enter the Card Number"
-                    className="w-full p-2 border rounded"
-                    id="Card_Number" name="Card_Number" autoComplete='off' 
-                    value={Card_Number}
-                    onChange={(e) =>{setNo(e.target.value)}}
-                    
-                  />
+                  <div className="flex items-center">
+                    <input
+                      type={showCardNumber ? "text" : "password"}
+                      placeholder="Enter the Card Number"
+                      className="w-full p-2 border rounded"
+                      id="Card_Number"
+                      name="Card_Number"
+                      autoComplete='off'
+                      value={Card_Number}
+                      onChange={(e) => { setNo(e.target.value) }}
+                    />
+                    <button type="button" onClick={toggleShowCardNumber}>
+                      {showCardNumber ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  {errors.Card_Number && <span className="text-red-500">{errors.Card_Number}</span>}
                 </div>
                 <div className="mb-2 font-serif">
                   <label htmlFor="cvc">CVC</label>
-                  <input
-                    type="text"
-                    placeholder="Enter the CVC"
-                    className="w-full p-2 border rounded"
-                    id="cvc" name="cvc" autoComplete='off' value={cvc}
-                    onChange={(e) =>{setCvc(e.target.value)}}
-                    
-                  />
+                  <div className="flex items-center">
+                    <input
+                      type={showCVC ? "text" : "password"}
+                      placeholder="Enter the CVC"
+                      className="w-full p-2 border rounded"
+                      id="cvc"
+                      name="cvc"
+                      autoComplete='off'
+                      value={cvc}
+                      onChange={(e) => { setCvc(e.target.value) }}
+                    />
+                    <button type="button" onClick={toggleShowCVC}>
+                      {showCVC ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  {errors.cvc && <span className="text-red-500">{errors.cvc}</span>}
                 </div>
                 <div className="mb-2 font-serif flex flex-row">
                   <div className="mr-2">
-                    <label htmlFor="Expiry_Month">Card Validity:Expiry Month</label>
+                    <label htmlFor="Expiry_Month">Card Validity: Expiry Month</label>
                     <select
                       className="p-2 border rounded"
                       id="Expiry_Month" name="Expiry_Month" 
                       value={Expiry_Month}
                       onChange={(e) =>{setMonth(e.target.value)}}
-                      
                     >
                       <option value="">Month</option>
                       <option value="01">01</option>
@@ -165,7 +242,6 @@ export default function Payment() {
                       id="Expiry_Year" name="Expiry_Year" 
                       value={Expiry_Year}
                       onChange={(e) =>{setYear(e.target.value)}}
-                    
                     >
                       <option value="">Year</option>
                       <option value="1">2024</option>
@@ -184,22 +260,22 @@ export default function Payment() {
                     type="text"
                     placeholder="Enter the Bank Branch"
                     className="w-full p-2 border rounded"
-                    id="Branch" name="Branch" autoComplete='off' 
+                    id="Branch"
+                    name="Branch"
+                    autoComplete='off'
                     value={Branch}
-                    onChange={(e) =>{setBranch(e.target.value)}}
-                    
+                    onChange={(e) => { setBranch(e.target.value) }}
                   />
                 </div>
                 <div className="flex flex-row justify-center font-serif text-center">
-                <button className='new_btn ml-4'>Submit</button>
+                  <button className='new_btn ml-4'>Submit</button>
                 </div>
               </form>
             </div>
           </div>
         </div>
       </div>
-<div> <Footer /> </div>
-
+      <Footer />
     </>
   );
 }

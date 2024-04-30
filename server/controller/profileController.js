@@ -5,6 +5,12 @@ export const createProfile = async (req, res) => {
     const { Id, Name, Email_address, Contact_No, NIC_number } = req.body;
     
     try {
+        // Validate input fields
+        const validationResult = await supplierProfile.validate({ Id, Name, Email_address, Contact_No, NIC_number });
+        if (validationResult.error) {
+            return res.status(400).json({ message: validationResult.error.details[0].message });
+        }
+
         const newDetails = new supplierProfile({
             Id, Name, Email_address, Contact_No, NIC_number
         });

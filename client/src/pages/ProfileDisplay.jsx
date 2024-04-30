@@ -81,6 +81,7 @@ const ProfileDisplay = () => {
           <Link to="/PaymentDisplay" className="btn">
             Payment Details
           </Link>
+
         </div>
 
         <div className="w-[20%] h-[650px] flex-grow border">
@@ -94,7 +95,7 @@ const ProfileDisplay = () => {
                 <label htmlFor="Id">ID</label>
                 <input
                   type="text"
-                  placeholder="001"
+                  placeholder="***"
                   className="w-full p-2 border rounded"
                   readOnly
                 />
@@ -152,7 +153,7 @@ const ProfileDisplay = () => {
                                         <th className="p-3 text-center">ID</th>
                                         <th className="p-3 text-center">Name</th>
                                         <th className="p-3 text-center">Email address</th>
-                                         <th className="p-3 text-center">Contact Number</th>
+                                        <th className="p-3 text-center">Contact Number</th>
                                         <th className="p-3 text-center">NIC number</th>
                                         <th className="p-3 text-left">Action</th> 
                                     </tr>
@@ -160,7 +161,7 @@ const ProfileDisplay = () => {
                                 <tbody>
                                     {SupllierProfile.map((profile, index) => (
                                         <tr key={index}>
-                                            <td className="text-center">{profile.Id}</td>
+                                            <td className="text-center">{'*'.repeat(profile.Id.toString().length)}</td>
                                             <td className="text-center">{profile.Name}</td>
                                             <td className="text-center">{profile.Email_address}</td>
                                             <td className="text-center">{profile.Contact_No}</td>
@@ -178,7 +179,7 @@ const ProfileDisplay = () => {
         </div>
         
       </div>
-     
+
 
       <Footer className="footer-prof" />
     </>
